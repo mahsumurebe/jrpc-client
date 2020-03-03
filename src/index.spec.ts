@@ -4,7 +4,7 @@ import {ErrorResponse} from './types';
 let jsonrpc = new JSONRPC();
 describe('Testing client', () => {
     it('should be correct jsonrpc output', () => {
-        const data = jsonrpc.convert('object', {method: 'help'});
+        const data = jsonrpc.convert(false, 'object', {method: 'help'});
         expect(data).toMatchObject({id: 1, jsonrpc: '2.0', method: 'help', params: {}});
     });
     it('should ErrorResponse instance', () => {
@@ -12,7 +12,7 @@ describe('Testing client', () => {
         expect(data).toBeInstanceOf(ErrorResponse);
     });
     it('should be correct batch jsonrpc output', () => {
-        const data = jsonrpc.convert('object', [{method: 'help'}, {method: 'help2'}]);
+        const data = jsonrpc.convert(false, 'object', [{method: 'help'}, {method: 'help2'}]);
         expect(data).toMatchObject([{
             id: 1,
             jsonrpc: '2.0',
