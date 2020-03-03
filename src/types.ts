@@ -34,6 +34,12 @@ export interface ICaller<P = any> {
     params?: TParams<P>
 }
 
+export interface INotification<P = any> {
+    jsonrpc?: '2.0',
+    method: string;
+    params?: TParams<P>
+}
+
 export interface IErrorInline {
     code?: number;
     message: string;

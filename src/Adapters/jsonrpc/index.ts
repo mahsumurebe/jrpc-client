@@ -1,4 +1,4 @@
-import {IAdapter, TConvertTypes} from '../types';
+import {IAdapter, TConvertTypes, TNotificationTypes} from '../types';
 import {ErrorResponse, ICaller, TParams, TResponseInput, TResponseOutput} from '../../types';
 
 export class JSONRPC implements IAdapter {
@@ -21,7 +21,7 @@ export class JSONRPC implements IAdapter {
         return out;
     }
 
-    convert(paramsType: 'array' | 'object', method: TConvertTypes, params?: TParams<any>): Array<ICaller> | ICaller {
+    convert(notification = false, paramsType: 'array' | 'object', method: TConvertTypes | TNotificationTypes<any>, params?: TParams<any>): Array<ICaller> | ICaller {
         let methods: Array<ICaller> = [];
         if (method instanceof Array) {
             methods = method;
@@ -57,8 +57,13 @@ export class JSONRPC implements IAdapter {
         };
 
         methods = methods.map(item => {
-            if (!item.id) {
+            if (!item.id && !notification) {
                 item.id = getNextId();
+            }
+            if (notification) {
+                if (!!item.id) {
+                    delete item['id'];
+                }
             }
             if (!item.jsonrpc) {
                 item.jsonrpc = '2.0';
