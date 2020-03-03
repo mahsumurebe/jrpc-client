@@ -17,7 +17,7 @@ export interface IRPCClientConfig {
     auth?: IRPCCredentials;
     headers?: { [header: string]: string }
     axios?: AxiosRequestConfig,
-    paramsType: 'object' | 'array'
+    paramsType?: 'object' | 'array'
 }
 
 export interface IRPCCredentials {
