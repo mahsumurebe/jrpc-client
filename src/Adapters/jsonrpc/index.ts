@@ -1,20 +1,24 @@
 import {IAdapter, TConvertTypes} from '../types';
-import {ErrorResponse, ICaller, TParams, TResponseOutput} from '../../types';
+import {ErrorResponse, ICaller, TParams, TResponseInput, TResponseOutput} from '../../types';
 
 export class JSONRPC implements IAdapter {
-    checkError<T = any>(data: Array<TResponseOutput<T>> | TResponseOutput<T>): Array<TResponseOutput<T>> | TResponseOutput<T> {
+    checkError<T = any>(data: Array<TResponseInput<T>> | TResponseInput<T>): Array<TResponseOutput<T>> | TResponseOutput<T> {
         if (!(data instanceof Array)) {
             data = [data];
         }
-        for (let [index, item] of data.entries()) {
+        const out: Array<TResponseOutput<T>> = [];
+        for (let item of data) {
             // @ts-ignore
             if (!!item.error) {
                 // @ts-ignore
                 item = new ErrorResponse(item.id, item.error, item.jsonrpc || '2.0');
             }
-            data[index] = item;
+            out.push(item as TResponseOutput<T>);
         }
-        return data;
+        if (out.length === 1) {
+            return out[0];
+        }
+        return out;
     }
 
     convert(paramsType: 'array' | 'object', method: TConvertTypes, params?: TParams<any>): Array<ICaller> | ICaller {

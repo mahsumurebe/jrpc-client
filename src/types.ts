@@ -46,6 +46,10 @@ interface IResponseBase {
     jsonrpc: string;
 }
 
+export interface IErrorResponse extends IResponseBase {
+    error: IErrorInline
+}
+
 export class ErrorResponse implements IResponseBase {
     constructor(public readonly id: number, public readonly error: IErrorInline, public readonly jsonrpc = '2.0') {
     }
@@ -67,4 +71,5 @@ export interface IResponse<R = any> extends IResponseBase {
     result: R
 }
 
-export type TResponseOutput<T> = IResponse<T> | ErrorResponse
+export type TResponseOutput<T> = IResponse<T> | ErrorResponse;
+export type TResponseInput<T> = IResponse<T> | IErrorResponse;
