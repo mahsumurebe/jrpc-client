@@ -1,37 +1,28 @@
-import RPCClient from './index';
-import {ErrorResponse, IRPCCredentials} from './types';
+import {JSONRPC} from './Adapters/jsonrpc';
+import {ErrorResponse} from './types';
 
-let client: RPCClient;
-const host = '127.0.0.1';
-const port = 3000;
-const auth: IRPCCredentials = {
-    username: 'admin',
-    password: 'password',
-};
+let jsonrpc = new JSONRPC();
 describe('Testing client', () => {
-    beforeAll(() => {
-        client = new RPCClient({
-            auth: auth,
-            url: `http://${host}:${port}`,
-            pathname: '/',
-            proxy: {
-                host: '127.0.0.1',
-                port: 8888,
-            },
-        });
+    it('should be correct jsonrpc output', () => {
+        const data = jsonrpc.convert('object', {method: 'help'});
+        expect(data).toMatchObject({id: 1, jsonrpc: '2.0', method: 'help', params: {}});
     });
-
-    it('should help method return "DONE" string', async () => {
-        expect.assertions(1);
-        await client.call('help')
-            .then((data) => {
-                expect(data).not.toBeInstanceOf(ErrorResponse);
-                if (!(data instanceof ErrorResponse)) {
-                    expect(data).toMatch('result');
-                    expect(data.result).toEqual('DONE');
-                }
-            }).catch(e => {
-                expect(e).toMatch('error')
-            });
+    it('should ErrorResponse instance', () => {
+        const data = jsonrpc.checkError({id: 1, error: {code: -1, message: 'test'}, jsonrpc: '2.0'});
+        expect(data).toBeInstanceOf(ErrorResponse);
+    });
+    it('should be correct batch jsonrpc output', () => {
+        const data = jsonrpc.convert('object', [{method: 'help'}, {method: 'help2'}]);
+        expect(data).toMatchObject([{
+            id: 1,
+            jsonrpc: '2.0',
+            method: 'help',
+            params: {},
+        }, {
+            id: 2,
+            jsonrpc: '2.0',
+            method: 'help2',
+            params: {},
+        }]);
     });
 });
