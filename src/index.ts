@@ -22,6 +22,7 @@ export default class RPCClient {
             auth: this.config.auth,
             proxy: this.config.proxy,
             headers: this.config.headers,
+            paramsType: 'array',
         };
         this.request = Axios.create(axiosConfig);
     }
@@ -36,6 +37,7 @@ export default class RPCClient {
             .then(response => this.adapter.checkError<T>(response.data))
             .catch((e: AxiosError) => {
                 if (e.isAxiosError) {
+                    console.log(e);
                     const data: ErrorResponse = e.response.data;
                     if (typeof data === 'object') {
                         if (data instanceof Array) {
