@@ -1,4 +1,4 @@
-import {ErrorResponse, ICaller, IRPCClientConfig, TParams, TResponseOutput} from './types';
+import {ErrorResponse, ICaller, IRPCClientConfig, TParams, TResponseInput, TResponseOutput} from './types';
 import Axios, {AxiosError, AxiosInstance} from 'axios';
 import {TConvertTypes} from './Adapters/types';
 import {JSONRPC} from './Adapters/jsonrpc';
@@ -33,11 +33,10 @@ export default class RPCClient {
     call<T, P = any>(method: TConvertTypes, params?: TParams<P>): Promise<Array<TResponseOutput<T>> | TResponseOutput<T>> {
         const data = this.adapter.convert(this.config.paramsType, method, params);
         return this.request
-            .post<TResponseOutput<T>>(this.config.pathname, data)
+            .post<TResponseInput<T>>(this.config.pathname, data)
             .then(response => this.adapter.checkError<T>(response.data))
             .catch((e: AxiosError) => {
                 if (e.isAxiosError) {
-                    console.log(e);
                     const data: ErrorResponse = e.response.data;
                     if (typeof data === 'object') {
                         if (data instanceof Array) {
