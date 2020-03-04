@@ -70,5 +70,5 @@ Configurations are defined in the object in the first parameter of the construct
 
 ## Resources
 
- - [Changelog](https://github.com/mahsumurebe/jrpc-client/master/CHANGELOG.md)
+ - [Changelog](https://github.com/mahsumurebe/jrpc-client/blob/development/CHANGELOG.md)
  - [Axios Config Keys](https://github.com/axios/axios#request-config)
