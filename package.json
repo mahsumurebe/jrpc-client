@@ -16,7 +16,7 @@
   },
   "author": "Mahsum UREBE <info@mahsumurebe.com>",
   "license": "MIT",
-  "types": "lib/index.d.ts",
+  "types": "lib/types.d.ts",
   "dependencies": {
     "@types/axios": "^0.14.0",
     "@types/node": "^13.13.9",
