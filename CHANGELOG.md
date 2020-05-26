@@ -4,6 +4,8 @@
 
 Documentation:
 
+-	UPDATE Export all typings in index.ts file *[#0bced48](https://github.com/mahsumurebe/jrpc-client/commit/0bced48)*
+-	UPDATE package version *[#2fb38e6](https://github.com/mahsumurebe/jrpc-client/commit/2fb38e6)*
 -	UPDATE README.md and Documentation *[#a064bbe](https://github.com/mahsumurebe/jrpc-client/commit/a064bbe)*
 -	UPDATE README.md and Documentation *[#c23c32e](https://github.com/mahsumurebe/jrpc-client/commit/c23c32e)*
 -   ADD CHANGELOG.md
