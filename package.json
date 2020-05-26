@@ -1,6 +1,6 @@
 {
   "name": "@mahsumurebe/jrpc-client",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "JSONRPC Client",
   "main": "lib/index.js",
   "scripts": {
@@ -16,7 +16,7 @@
   },
   "author": "Mahsum UREBE <info@mahsumurebe.com>",
   "license": "MIT",
-  "types": "lib/types.d.ts",
+  "types": "lib/index.d.ts",
   "dependencies": {
     "@types/axios": "^0.14.0",
     "@types/node": "^13.13.9",
