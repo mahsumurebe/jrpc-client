@@ -4,7 +4,8 @@
 
 Documentation:
 
--	UPDATE README.md and Documentation *[#c23c32ed69d296bc08ef76e0be9da859768972a9](https://github.com/mahsumurebe/jrpc-client/commit/c23c32ed69d296bc08ef76e0be9da859768972a9)*
+-	UPDATE README.md and Documentation *[#a064bbe](https://github.com/mahsumurebe/jrpc-client/commit/a064bbe)*
+-	UPDATE README.md and Documentation *[#c23c32e](https://github.com/mahsumurebe/jrpc-client/commit/c23c32e)*
 -   ADD CHANGELOG.md
 
 ### 1.0.0 (Mar 4, 2020)
