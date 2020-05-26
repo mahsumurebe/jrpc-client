@@ -1,3 +1,7 @@
+export * from './Core/Errors';
+export * from './types';
+export * from './Adapters/types';
+export * from './Adapters/jsonrpc/index';
 import {
     ErrorResponse,
     ICaller,
