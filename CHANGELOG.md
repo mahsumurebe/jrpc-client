@@ -1,5 +1,12 @@
 # Changelog
 
+### 1.2.2 (Sep 27, 2020)
+
+Documentation:
+
+-   bump version 1.2.1 to 1.2.2 *[#86e8e77b](https://github.com/mahsumurebe/jrpc-client/commit/86e8e77b)*
+-   FIX response.data error *[#2829d35d](https://github.com/mahsumurebe/jrpc-client/commit/2829d35d)*
+
 ### 1.2.1 (Jul 24, 2020)
 
 Documentation:
