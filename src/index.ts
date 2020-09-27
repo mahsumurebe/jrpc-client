@@ -58,18 +58,27 @@ export default class RPCClient {
             .then(response => this.adapter.checkError<T>(response.data))
             .catch((e: AxiosError) => {
                 if (e.isAxiosError) {
-                    const data: ErrorResponse = e.response.data;
-                    if (typeof data === 'object') {
-                        if (data instanceof Array) {
-                            return this.adapter.checkError<T>(data);
-                        } else if (!!data.error) {
-                            throw RpcError.fromJSON({
-                                code: data.error.code,
-                                message: data.error.message,
-                                data,
-                            });
+                    if (e.response && e.response.data) {
+                        const data: ErrorResponse = e.response.data;
+                        if (typeof data === 'object') {
+                            if (data instanceof Array) {
+                                return this.adapter.checkError<T>(data);
+                            } else if (!!data.error) {
+                                throw RpcError.fromJSON({
+                                    code: data.error.code,
+                                    message: data.error.message,
+                                    data,
+                                });
+                            }
                         }
+                    } else {
+                        throw RpcError.fromJSON({
+                            code: RpcErrorCode.INTERNAL_ERROR,
+                            message: RpcErrorMessage.INTERNAL_ERROR,
+                            parent: e
+                        })
                     }
+
                 }
                 throw RpcError.fromJSON({
                     code: RpcErrorCode.SERVER_ERROR,
