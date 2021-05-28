@@ -6,8 +6,8 @@
   "scripts": {
     "prepare": "npm run build",
     "test:file": "tsc && node lib/test.js",
-    "test": "jest",
-    "test:watch": "jest --watchAll",
+    "test": "jest -c jest.config.js",
+    "test:watch": "jest -c jest.config.js --watchAll",
     "build": "tsc"
   },
   "repository": {
