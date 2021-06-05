@@ -7,8 +7,8 @@ JSONRPC 2.0 Client package for Nodejs. Fully tested to comply with the official 
 ![npm](https://img.shields.io/npm/dt/@mahsumurebe/jrpc-client?style=for-the-badge)
 
 ![Libraries.io SourceRank, scoped npm package](https://img.shields.io/librariesio/sourcerank/npm/@mahsumurebe/jrpc-client?style=for-the-badge)
-![minzipped-size](https://img.shields.io/bundlephobia/minzip/@mahsumurebe/jrpc-client/1.2.3?style=for-the-badge)
-![minfied-size](https://img.shields.io/bundlephobia/min/@mahsumurebe/jrpc-client/1.2.3?style=for-the-badge)
+![minzipped-size](https://img.shields.io/bundlephobia/minzip/@mahsumurebe/jrpc-client/1.2.5?style=for-the-badge)
+![minfied-size](https://img.shields.io/bundlephobia/min/@mahsumurebe/jrpc-client/1.2.5?style=for-the-badge)
 
 ![issues-open](https://img.shields.io/github/issues/mahsumurebe/jrpc-client?style=for-the-badge)
 ![issues-closed](https://img.shields.io/github/issues-closed/mahsumurebe/jrpc-client?style=for-the-badge)
