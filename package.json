@@ -1,6 +1,6 @@
 {
   "name": "@mahsumurebe/jrpc-client",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "description": "JSONRPC Client",
   "main": "lib/index.js",
   "scripts": {
