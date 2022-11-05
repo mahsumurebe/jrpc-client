@@ -1,4 +1,4 @@
-# jRPC Client
+# JRPC Client
 JSONRPC 2.0 Client package for Nodejs. Fully tested to comply with the official [JSON-RPC 2.0 specification](https://www.jsonrpc.org/specification)
 
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/mahsumurebe/jrpc-client?style=for-the-badge)
@@ -7,8 +7,8 @@ JSONRPC 2.0 Client package for Nodejs. Fully tested to comply with the official 
 ![npm](https://img.shields.io/npm/dt/@mahsumurebe/jrpc-client?style=for-the-badge)
 
 ![Libraries.io SourceRank, scoped npm package](https://img.shields.io/librariesio/sourcerank/npm/@mahsumurebe/jrpc-client?style=for-the-badge)
-![minzipped-size](https://img.shields.io/bundlephobia/minzip/@mahsumurebe/jrpc-client/1.3.3?style=for-the-badge)
-![minfied-size](https://img.shields.io/bundlephobia/min/@mahsumurebe/jrpc-client/1.3.3?style=for-the-badge)
+![minzipped-size](https://img.shields.io/bundlephobia/minzip/@mahsumurebe/jrpc-client/latest?style=for-the-badge)
+![minfied-size](https://img.shields.io/bundlephobia/min/@mahsumurebe/jrpc-client/latest?style=for-the-badge)
 
 ![issues-open](https://img.shields.io/github/issues/mahsumurebe/jrpc-client?style=for-the-badge)
 ![issues-closed](https://img.shields.io/github/issues-closed/mahsumurebe/jrpc-client?style=for-the-badge)
@@ -28,59 +28,111 @@ npm install @mahsumurebe/jrpc-client
   
 ## Usage  
   
-It should not create a Client Class instance.  
+It should not create a JRPCClient instance.  
 ```typescript  
-const client = new RPCClient({ 
-	url: 'http://127.0.0.1:3000',  
-});  
+// Create instance
+const clientInstance = new JRPCClient(new HttpAdapter({ port: 3000 }));
+// Call start method for connection
+await clientInstance.start();
 ```  
-Method calls are made after the Client Class instance is created.  
+
+### Call Method
+Method calls are made after the JRPCClient instance is created.  
 ```typescript  
-async function init() {  
- const help = await client.call('help');  
-  console.log(help);  
-}  
-init().catch(e=>console.error(e));  
+// Call foo method with "bar" and "baz" parameters
+const response = await clientInstance.call({
+  id: 1,
+  jsonrpc: "2.0",
+  method: "foo",
+  params: ["bar", "baz"],
+});
+console.log(response);
+// Response Object
+// { id: 1, jsonrpc: "2.0", response: "foo response" }
 ```  
 The call method returns the JSONRPC response. Returns the ErrorResponse class instance if the request response is an error.  
 
-## Batch Call  
+### Batch Call Method 
 Call method can be used to call requests. You can review the usage example below.  
   
 ```typescript  
-async function init() {  
-    const help = await client.call([{
-        method: 'help'
-    },
-    {
-    method: 'anotherFn',
-    params: [
-      "param1",
-      2,
-      {
-        "param": "obj"
-      }
-    ]
-  }]);  
-  console.log(help);  
-}  
-init().catch(e=>console.error(e));  
+const batchResponse = await clientInstance.call([
+  { id: 1, jsonrpc: "2.0", method: "foo", params: ["bar", "baz"] },
+  { id: 2, jsonrpc: "2.0", method: "bar", params: ["bar", "baz"] },
+  { jsonrpc: "2.0", method: "notification", params: ["bar", "baz"] }, // Notification request does not return value
+]);
+console.log(batchResponse);
+// [
+//   { id: 1, jsonrpc: "2.0", response: "foo response" },
+//   { id: 2, jsonrpc: "2.0", response: "bar response" },
+// ]
 ```
 
-## Configuration List
-Configurations are defined in the object in the first parameter of the construction method when creating the Client object.
+## Adapters
 
-| KEY        | DEFAULT | DESCRIPTION                                 | EXAMPLE                                                                            |
-|------------|---------|---------------------------------------------|------------------------------------------------------------------------------------|
-| url        | null    | JSONRPC Server address                      | "http://127.0.0.1:3000"                                                            |
-| pathname   | "/"     | Server path                                 | /jsonrpc                                                                           |
-| proxy      | null    | Proxy                                       | { host: '127.0.0.1', port: 8888, auth:{ username: "admin", password:"password" } } |
-| auth       | null    | RPC Credentials                             | { username: "rpcuser", password:"rpcpassword" }                                    |
-| headers    | null    | HTTP Headers                                | { 'X-Header': 'Header Value' }                                                     |
-| paramsType | "array" | Default parameter type  (array  or object ) | "object"                                                                           |
-| axios      | null    | Axios Config                                |                                                                                    |
+There are HTTP and Websocket adapters available.
+
+### HTTP
+
+HTTP Adapter is used to connect to JRPC Servers served over HTTP Protocol.
+
+```typescript
+// Adapter Instance
+const adapter = new HttpAdapter({ port: 3000 })
+
+// Client Instance
+const clientInstance = new JRPCClient(adapter);
+```
+
+#### Configuration List
+Configurations are defined in the object in the first parameter of the construction method when creating the HttpAdapter.
+
+| KEY       | DEFAULT   | DESCRIPTION            | Type              |
+|-----------|-----------|------------------------|-------------------|
+| schema    | http      | Server schema          | "http" or "https" |
+| hostname  | undefined | JSONRPC Server address | string            |
+| port      | 80        | Server port            | number            |
+| pathname  | "/"       | Server path            | string            |
+| headers   | null      | HTTP Headers           | object            |
+| timeout   | 10_000    | Timeout                | number            |
+
+
+### Websocket
+
+Websocket Adapter is used to connect to JRPC Servers served over Websocket Protocol.
+
+```typescript
+// Adapter Instance
+const adapter = new WebsocketAdapter({ port: 3000 })
+
+// Client Instance
+const clientInstance = new JRPCClient(adapter);
+```
+
+#### Configuration List
+Configurations are defined in the object in the first parameter of the construction method when creating the WebsocketAdapter.
+
+| KEY       | DEFAULT   | DESCRIPTION            | Type          |
+|-----------|-----------|------------------------|---------------|
+| schema    | ws        | Server schema          | "ws" or "wss" |
+| hostname  | undefined | JSONRPC Server address | string        |
+| port      | 80        | Server port            | number        |
+| pathname  | "/"       | Server path            | string        |
+| headers   | null      | HTTP Headers           | object        |
+| timeout   | 10_000    | Timeout                | number        |
+
+#### Custom Adapters
+
+For custom adapters, you need to extend the adapter class with the `AdapterAbstract` abstract class.
+You have to create the abstract functions request, connect and destroy inside the class.
+
+**connect**: A piece of code that provides the protocol connection should be added to this method.
+
+**destroy**: A piece of code that breaks the protocol connection should be added to this method.
+
+**request**: A piece of code that sends the body to the server and parses the output should be added to this method.
+_When there is a response from the server, the response object should be sent to the `AdapterAbstract.parseData` function._
 
 ## Resources
 
  - [Changelog](https://github.com/mahsumurebe/jrpc-client/blob/development/CHANGELOG.md)
- - [Axios Config Keys](https://github.com/axios/axios#request-config)
