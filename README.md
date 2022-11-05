@@ -29,16 +29,19 @@ npm install @mahsumurebe/jrpc-client
 ## Usage  
   
 It should not create a JRPCClient instance.  
-```typescript  
+```typescript
 // Create instance
-const clientInstance = new JRPCClient(new HttpAdapter({ port: 3000 }));
+const clientInstance = new JRPCClient(new HttpAdapter({
+    hostname: "localhost", 
+    port: 3000
+}));
 // Call start method for connection
 await clientInstance.start();
 ```  
 
 ### Call Method
 Method calls are made after the JRPCClient instance is created.  
-```typescript  
+```typescript
 // Call foo method with "bar" and "baz" parameters
 const response = await clientInstance.call({
   id: 1,
@@ -55,7 +58,7 @@ The call method returns the JSONRPC response. Returns the ErrorResponse class in
 ### Batch Call Method 
 Call method can be used to call requests. You can review the usage example below.  
   
-```typescript  
+```typescript
 const batchResponse = await clientInstance.call([
   { id: 1, jsonrpc: "2.0", method: "foo", params: ["bar", "baz"] },
   { id: 2, jsonrpc: "2.0", method: "bar", params: ["bar", "baz"] },
@@ -78,7 +81,12 @@ HTTP Adapter is used to connect to JRPC Servers served over HTTP Protocol.
 
 ```typescript
 // Adapter Instance
-const adapter = new HttpAdapter({ port: 3000 })
+import {JRPCClient, HttpAdapter} from '@mahsumurebe/jrpc-client';
+
+const adapter = new HttpAdapter({
+    hostname: "localhost", 
+    port: 3000
+});
 
 // Client Instance
 const clientInstance = new JRPCClient(adapter);
@@ -103,7 +111,10 @@ Websocket Adapter is used to connect to JRPC Servers served over Websocket Proto
 
 ```typescript
 // Adapter Instance
-const adapter = new WebsocketAdapter({ port: 3000 })
+const adapter = new WebsocketAdapter({
+    hostname: "localhost",
+    port: 3000
+});
 
 // Client Instance
 const clientInstance = new JRPCClient(adapter);
