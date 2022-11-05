@@ -1,5 +1,9 @@
+.idea/
 .github/
 node_modules/
-.idea/
 src/
-lib/test.*
+.eslintrc.js
+.gitignore
+jest.config.json
+tsconfig*.json
+*.tgz
