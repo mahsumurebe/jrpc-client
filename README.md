@@ -22,14 +22,15 @@ You can use the [@mahsumurebe/jrpc-server](https://www.npmjs.com/package/@mahsum
 
 ## Install  
 For installation, you can run the following command in the directory of your project.
-```  
+```shell script
 npm install @mahsumurebe/jrpc-client  
 ```  
-  
-## Usage  
-  
+
+## Usage
 It should not create a JRPCClient instance.  
 ```typescript
+import { JRPCClient, HttpAdapter } from '@mahsumurebe/jrpc-client';
+
 // Create instance
 const clientInstance = new JRPCClient(new HttpAdapter({
     hostname: "localhost", 
@@ -69,6 +70,31 @@ console.log(batchResponse);
 //   { id: 1, jsonrpc: "2.0", response: "foo response" },
 //   { id: 2, jsonrpc: "2.0", response: "bar response" },
 // ]
+```
+
+### Notification Method
+Check out the sample code below to make a method notification.
+
+```typescript
+// Notification foo method with "bar" and "baz" parameters
+await clientInstance.notification({
+  jsonrpc: "2.0",
+  method: "foo",
+  params: ["bar", "baz"],
+});
+```  
+**Note:** The notification method does not return any response. The request is sent to the server. No response is expected from the server.
+
+### Batch Notification Method 
+
+Check out the example below for sending batch notifications.
+
+```typescript
+await clientInstance.notification([
+  { jsonrpc: "2.0", method: "foo", params: ["bar", "baz"] },
+  { jsonrpc: "2.0", method: "bar", params: ["bar", "baz"] },
+  { jsonrpc: "2.0", method: "baz", params: ["bar", "baz"] }, 
+]);
 ```
 
 ## Adapters
@@ -111,6 +137,8 @@ Websocket Adapter is used to connect to JRPC Servers served over Websocket Proto
 
 ```typescript
 // Adapter Instance
+import { JRPCClient, WebsocketAdapter } from '@mahsumurebe/jrpc-client';
+
 const adapter = new WebsocketAdapter({
     hostname: "localhost",
     port: 3000
