@@ -98,8 +98,8 @@ describe("JRPCClient", () => {
             })
           );
         });
-        it("should be able batch request and return response without notification request", () => {
-          expect(
+        it("should be able batch request and return response without notification request", async () => {
+          await expect(
             client.call([
               {
                 id: 1,
@@ -280,8 +280,8 @@ describe("JRPCClient", () => {
             })
           );
         });
-        it("should be able batch request and return response without notification request", () => {
-          expect(
+        it("should be able batch request and return response without notification request", async () => {
+          await expect(
             client.call([
               {
                 id: 1,
@@ -300,7 +300,6 @@ describe("JRPCClient", () => {
                 method: "foo",
                 params: [7, 8, 9],
               },
-
               {
                 id: 3,
                 jsonrpc: "2.0",
