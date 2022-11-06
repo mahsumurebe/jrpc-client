@@ -15,7 +15,7 @@ export function timeout<T>(
     const timer = setTimeout(() => {
       reject(err);
     }, ms);
-
+    timer.unref();
     promise
       .then((value) => {
         clearTimeout(timer);
