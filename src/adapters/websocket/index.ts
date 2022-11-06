@@ -184,7 +184,7 @@ export class WebsocketAdapter<
     let queueResolver: TypeQueue[any];
     if (Array.isArray(responseData)) {
       const first = responseData.find((responseItem) => {
-        if ("id" in responseData) {
+        if ("id" in responseItem && this.requestQueue[responseItem.id]) {
           return this.requestQueue[responseItem.id];
         }
         return false;
@@ -216,6 +216,19 @@ export class WebsocketAdapter<
     debug("terminating websocket connection");
     let closeFn: () => void;
     let errorFn: (error: Error) => void;
+    const queueIds = Object.keys(this.requestQueue);
+    if (queueIds.length > 0) {
+      debug(
+        `There are ${queueIds.length} active response queues. Queues will be stopped.`
+      );
+      queueIds.forEach((id) => {
+        debug(`Sending empty response to ${id} request`);
+        const queueResolver = this.requestQueue[id];
+        queueResolver(undefined);
+      });
+    } else {
+      debug("There is no active response queue.");
+    }
     return new Promise<void>((resolve, reject) => {
       closeFn = () => {
         debug("websocket terminated");
@@ -227,6 +240,7 @@ export class WebsocketAdapter<
       };
       this.handler.on("close", closeFn);
       this.handler.on("error", errorFn);
+      debug("terminating handler");
       this.handler.terminate();
     }).finally(() => {
       this.handler?.removeListener("close", closeFn);
