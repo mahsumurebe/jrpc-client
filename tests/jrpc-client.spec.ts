@@ -24,14 +24,13 @@ describe("JRPCClient", () => {
         };
 
         const clientConfig: Client.HttpAdapterConfigInterface = {
-          hostname: serverConfig.hostname,
-          port: serverConfig.port,
-          schema: "http",
           timeout: 2_000,
         };
 
         server = await generateJRPCServer(new Server.HttpAdapter(serverConfig));
-        client = await generateJRPCClient(new Client.HttpAdapter(clientConfig));
+        client = await generateJRPCClient(
+          new Client.HttpAdapter("http://localhost:3000/", clientConfig)
+        );
       });
       describe("call", () => {
         it("should be return response", async () => {
@@ -202,9 +201,6 @@ describe("JRPCClient", () => {
         };
 
         const clientConfig: Client.WebsocketAdapterConfigInterface = {
-          hostname: serverConfig.hostname,
-          port: serverConfig.port,
-          schema: "ws",
           timeout: 2_000,
         };
 
@@ -212,7 +208,7 @@ describe("JRPCClient", () => {
           new Server.WebsocketAdapter(serverConfig)
         );
         client = await generateJRPCClient(
-          new Client.WebsocketAdapter(clientConfig)
+          new Client.WebsocketAdapter("ws://localhost:3000/", clientConfig)
         );
       });
       describe("call", () => {

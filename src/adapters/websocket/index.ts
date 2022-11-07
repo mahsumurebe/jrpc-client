@@ -1,4 +1,5 @@
 import { WebSocket } from "ws";
+import * as URL from "url";
 import {
   AdapterAbstract,
   JRPCExceptionAbstract,
@@ -32,7 +33,7 @@ type TypeQueue = {
  * @example
  *   // Create adapter for WS Connection
  *   const adapter = new WebSocket({
- *     schema: "ws",
+ *     protocol: "ws",
  *     hostname: "localhost",
  *     port: 3000,
  *   });
@@ -40,7 +41,7 @@ type TypeQueue = {
  * @example
  *   // Create adapter for WSs Connection
  *   const adapter = new WebSocket({
- *     schema: "wss",
+ *     protocol: "wss",
  *     hostname: "foo.bar",
  *     port: 443,
  *   });
@@ -56,18 +57,30 @@ export class WebsocketAdapter<
    */
   protected handler: WebSocket;
 
+  /**
+   * Request Queue
+   *
+   * @type {object}
+   * @protected
+   */
   protected requestQueue: TypeQueue = {};
 
-  constructor(protected readonly config: WebsocketAdapterConfigInterface) {
+  constructor(
+    protected readonly url: string,
+    protected readonly config?: WebsocketAdapterConfigInterface
+  ) {
     super();
     debug("initialize");
     this.config = {
-      schema: "ws",
-      pathname: "/",
-      port: 80,
       timeout: 10 * 1000,
       ...(this.config ?? {}),
     } as WebsocketAdapterConfigInterface;
+
+    const parsedUrl = URL.parse(this.url);
+
+    if (["wss", "wss"].indexOf(parsedUrl.protocol) > -1) {
+      throw new Error(`${parsedUrl.protocol} does not supported.`);
+    }
   }
 
   /**
@@ -94,14 +107,14 @@ export class WebsocketAdapter<
    */
   connect(): Promise<void> {
     debug("create websocket handler");
-    const url = new URL(`${this.config.schema}://${this.config.hostname}`);
-    url.pathname = this.config.pathname ?? "/";
-    url.port = this.config.port.toString();
     let openFn: () => void;
     let errFn: (err: Error) => void;
     return new Promise<void>((resolve, reject) => {
-      debug("connecting to", url.toString());
-      this.handler = new WebSocket(url.toString());
+      debug("connecting to", this.url.toString());
+      const headers = { ...this.config.headers };
+      this.handler = new WebSocket(this.url, {
+        headers,
+      });
       openFn = () => {
         debugHandler("websocket open");
         resolve();
@@ -125,10 +138,6 @@ export class WebsocketAdapter<
         debugHandler("websocket new response", body);
         this.processMessage(body);
       });
-    }).finally(() => {
-      debug("remove listener");
-      this.handler.removeListener("open", openFn);
-      this.handler.removeListener("error", errFn);
     });
   }
 

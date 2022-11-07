@@ -1,5 +1,6 @@
 // noinspection JSUnusedGlobalSymbols
 
+import * as URL from "url";
 import fetch, { RequestInit } from "node-fetch";
 import { HttpAdapterConfigInterface } from "./interfaces";
 import {
@@ -12,6 +13,7 @@ import {
   TypeMethodParam,
   timeout,
 } from "../../core";
+import { WebsocketAdapterConfigInterface } from "../websocket";
 
 const debug = require("debug")("jrpc:client:adapters:http");
 
@@ -27,7 +29,7 @@ export * from "./interfaces";
  * @example
  *   // Create adapter for HTTP Connection
  *   const adapter = new HttpAdapter({
- *     schema: "http",
+ *     protocol: "http",
  *     hostname: "localhost",
  *     port: 3000,
  *   });
@@ -35,7 +37,7 @@ export * from "./interfaces";
  * @example
  *   // Create adapter for HTTPs Connection
  *   const adapter = new HttpAdapter({
- *     schema: "https",
+ *     protocol: "https",
  *     hostname: "foo.bar",
  *     port: 443,
  *   });
@@ -50,29 +52,24 @@ export class HttpAdapter<
    */
   private readonly fetchConfig: RequestInit;
 
-  /**
-   * Server URL
-   *
-   * @private
-   */
-  private readonly url: string;
-
-  constructor(protected readonly config: HttpAdapterConfigInterface) {
+  constructor(
+    protected readonly url: string,
+    protected readonly config?: HttpAdapterConfigInterface
+  ) {
     super();
-    debug("initialize");
-    const defaultConfig: Partial<HttpAdapterConfigInterface> = {
-      schema: "http",
-      pathname: "/",
-      timeout: 10 * 1000,
-    };
-    this.config = {
-      ...(defaultConfig as HttpAdapterConfigInterface),
-      ...(this.config ?? {}),
-    } as HttpAdapterConfigInterface;
 
-    const url = new URL(`${this.config.schema}://${this.config.hostname}`);
-    url.pathname = this.config.pathname ?? "/";
-    url.port = this.config.port.toString();
+    debug("initialize");
+    this.config = {
+      timeout: 10 * 1000,
+      ...(this.config ?? {}),
+    } as WebsocketAdapterConfigInterface;
+
+    const parsedUrl = URL.parse(this.url);
+
+    if (["wss", "wss"].indexOf(parsedUrl.protocol) > -1) {
+      throw new Error(`${parsedUrl.protocol} does not supported.`);
+    }
+
     const headers = { ...this.config.headers };
     const headerKeys = Object.keys(headers);
     if (
@@ -85,7 +82,6 @@ export class HttpAdapter<
       headers,
       method: "POST",
     };
-    this.url = url.toString();
   }
 
   /**

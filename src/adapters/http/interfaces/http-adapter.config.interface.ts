@@ -8,33 +8,6 @@
  */
 export interface HttpAdapterConfigInterface {
   /**
-   * Schema
-   *
-   * @default http
-   * @type {string}
-   */
-  schema?: "http" | "https";
-  /**
-   * Hostname
-   *
-   * @type {string}
-   */
-  hostname: string;
-  /**
-   * Port
-   *
-   * @default 80
-   * @type {?string}
-   */
-  port?: number;
-  /**
-   * Pathname
-   *
-   * @default /
-   * @type {?string}
-   */
-  pathname?: string;
-  /**
    * Headers
    *
    * @type {?object}
