@@ -32,10 +32,7 @@ It should not create a JRPCClient instance.
 import { JRPCClient, HttpAdapter } from '@mahsumurebe/jrpc-client';
 
 // Create instance
-const clientInstance = new JRPCClient(new HttpAdapter({
-    hostname: "localhost", 
-    port: 3000
-}));
+const clientInstance = new JRPCClient(new HttpAdapter('http://localhost:3000'));
 // Call start method for connection
 await clientInstance.start();
 ```  
@@ -109,10 +106,7 @@ HTTP Adapter is used to connect to JRPC Servers served over HTTP Protocol.
 // Adapter Instance
 import {JRPCClient, HttpAdapter} from '@mahsumurebe/jrpc-client';
 
-const adapter = new HttpAdapter({
-    hostname: "localhost", 
-    port: 3000
-});
+const adapter = new HttpAdapter('http://localhost:3000');
 
 // Client Instance
 const clientInstance = new JRPCClient(adapter);
@@ -139,10 +133,7 @@ Websocket Adapter is used to connect to JRPC Servers served over Websocket Proto
 // Adapter Instance
 import { JRPCClient, WebsocketAdapter } from '@mahsumurebe/jrpc-client';
 
-const adapter = new WebsocketAdapter({
-    hostname: "localhost",
-    port: 3000
-});
+const adapter = new WebsocketAdapter('ws:/localhost:3000');
 
 // Client Instance
 const clientInstance = new JRPCClient(adapter);
