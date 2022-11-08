@@ -1,6 +1,6 @@
 {
   "name": "@mahsumurebe/jrpc-client",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "description": "JSONRPC 2.0 NodeJS Client written in TypeScript",
   "main": "lib/index.js",
   "scripts": {
