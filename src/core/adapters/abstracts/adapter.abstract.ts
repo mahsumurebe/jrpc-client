@@ -1,11 +1,9 @@
 // noinspection JSUnusedGlobalSymbols
 
-import { getErrorInstanceFrom } from "../../exceptions/helpers/response.helper";
 import {
   TypeId,
   TypeJRPCRequestBody,
   TypeJRPCResponse,
-  TypeJRPCResponseBody,
   TypeMethodParam,
 } from "../../types";
 
@@ -47,24 +45,4 @@ export abstract class AdapterAbstract<
    * @return {Promise} Returns a void Promise
    */
   abstract destroy(): Promise<void> | void;
-
-  /**
-   * Parse response data
-   *
-   * @param {object|object[]} data Response Data
-   * @protected
-   * @return Promise Returns the smoothed output. If the return
-   * value(s) is an error object, it converts to an error class.
-   */
-  protected parseData<TData = any, TId extends TypeId = number>(
-    data: TypeJRPCResponseBody<TData, TId>
-  ): TypeJRPCResponse<TData, TId> | TypeJRPCResponse<TData, TId>[] {
-    if (Array.isArray(data)) {
-      return data.map((item) => this.parseData<TData, TId>(item)).flat();
-    }
-    if ("error" in data) {
-      return getErrorInstanceFrom(data);
-    }
-    return data;
-  }
 }

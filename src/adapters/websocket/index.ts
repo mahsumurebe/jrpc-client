@@ -4,6 +4,7 @@ import {
   AdapterAbstract,
   JRPCExceptionAbstract,
   JRPCRequestBodyInterface,
+  parse,
   RequestTimeoutException,
   timeout,
   TypeId,
@@ -73,6 +74,7 @@ export class WebsocketAdapter<
     debug("initialize");
     this.config = {
       timeout: 10 * 1000,
+      parser: parse,
       ...(this.config ?? {}),
     } as WebsocketAdapterConfigInterface;
 
@@ -204,7 +206,7 @@ export class WebsocketAdapter<
     }
     if (queueResolver) {
       debug(`parse data ${JSON.stringify(responseData)}`);
-      const res = this.parseData<TData, TId>(responseData);
+      const res = this.config.parser<TData, TId>(responseData);
       debug(
         `response ${
           res instanceof JRPCExceptionAbstract
