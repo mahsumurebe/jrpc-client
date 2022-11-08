@@ -1,3 +1,5 @@
+import { ConfigBaseInterface } from "../../../core";
+
 /**
  * HTTP Adapter Configuration
  *
@@ -6,7 +8,7 @@
  * @licence MIT
  * @interface
  */
-export interface HttpAdapterConfigInterface {
+export interface HttpAdapterConfigInterface extends ConfigBaseInterface {
   /**
    * Headers
    *

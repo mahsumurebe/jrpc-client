@@ -161,7 +161,7 @@ You have to create the abstract functions request, connect and destroy inside th
 **destroy**: A piece of code that breaks the protocol connection should be added to this method.
 
 **request**: A piece of code that sends the body to the server and parses the output should be added to this method.
-_When there is a response from the server, the response object should be sent to the `AdapterAbstract.parseData` function._
+_When there is a response from the server, the response object should be sent to the `adapter.config.parse` function._
 
 ## Resources
 

@@ -12,6 +12,7 @@ import {
   TypeJRPCResponseBody,
   TypeMethodParam,
   timeout,
+  parse,
 } from "../../core";
 import { WebsocketAdapterConfigInterface } from "../websocket";
 
@@ -57,10 +58,10 @@ export class HttpAdapter<
     protected readonly config?: HttpAdapterConfigInterface
   ) {
     super();
-
     debug("initialize");
     this.config = {
       timeout: 10 * 1000,
+      parser: parse,
       ...(this.config ?? {}),
     } as WebsocketAdapterConfigInterface;
 
@@ -113,7 +114,7 @@ export class HttpAdapter<
         const jsonObject: TypeJRPCResponseBody<TData, TId> =
           await response.json();
         debug("parse data", jsonObject);
-        const res = this.parseData<TData, TId>(jsonObject);
+        const res = this.config.parser<TData, TId>(jsonObject);
 
         debug("response", res);
         return res;
