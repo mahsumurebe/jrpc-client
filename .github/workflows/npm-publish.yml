@@ -5,24 +5,13 @@ on:
     types: [created]
 
 jobs:
-  build:
-    name: "Build and Test"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-      - name: Install dependencies
-        run: npm i
-      - name: Test
-        run: npm test
-        env:
-          DEBUG: "jrpc:*"
+  testing:
+    name: "Testing"
+    uses: ./.github/workflows/testing.yml
 
   publish-npm:
     name: "Publishing on NPM"
-    needs: build
+    needs: testing
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

@@ -115,14 +115,11 @@ const clientInstance = new JRPCClient(adapter);
 #### Configuration List
 Configurations are defined in the object in the first parameter of the construction method when creating the HttpAdapter.
 
-| KEY       | DEFAULT   | DESCRIPTION            | Type              |
-|-----------|-----------|------------------------|-------------------|
-| schema    | http      | Server schema          | "http" or "https" |
-| hostname  | undefined | JSONRPC Server address | string            |
-| port      | 80        | Server port            | number            |
-| pathname  | "/"       | Server path            | string            |
-| headers   | null      | HTTP Headers           | object            |
-| timeout   | 10_000    | Timeout                | number            |
+| KEY     | DEFAULT   | DESCRIPTION     | Type     |
+|---------|-----------|-----------------|----------|
+| parser  | null      | Response parser | Function |
+| headers | null      | HTTP Headers    | object   |
+| timeout | 10_000    | Timeout         | number   |
 
 
 ### Websocket
@@ -142,14 +139,11 @@ const clientInstance = new JRPCClient(adapter);
 #### Configuration List
 Configurations are defined in the object in the first parameter of the construction method when creating the WebsocketAdapter.
 
-| KEY       | DEFAULT   | DESCRIPTION            | Type          |
-|-----------|-----------|------------------------|---------------|
-| schema    | ws        | Server schema          | "ws" or "wss" |
-| hostname  | undefined | JSONRPC Server address | string        |
-| port      | 80        | Server port            | number        |
-| pathname  | "/"       | Server path            | string        |
-| headers   | null      | HTTP Headers           | object        |
-| timeout   | 10_000    | Timeout                | number        |
+| KEY     | DEFAULT   | DESCRIPTION     | Type     |
+|---------|-----------|-----------------|----------|
+| parser  | null      | Response parser | Function |
+| headers | null      | HTTP Headers    | object   |
+| timeout | 10_000    | Timeout         | number   |
 
 #### Custom Adapters
 

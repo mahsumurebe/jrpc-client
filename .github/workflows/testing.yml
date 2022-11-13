@@ -1,0 +1,29 @@
+name: Test Module
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [ opened, reopened, ready_for_review ]
+  workflow_call:
+
+env:
+  RPC_USER: rpcuser
+  RPC_PASS: rpcpass
+  RPC_PORT: 8332
+
+jobs:
+  build-and-test:
+    name: "Build and Test"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install dependencies
+        run: npm i
+      - name: Test
+        run: npm test
+        env:
+          DEBUG: "jrpc:*"
