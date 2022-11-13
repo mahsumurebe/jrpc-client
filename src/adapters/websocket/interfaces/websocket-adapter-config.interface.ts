@@ -9,12 +9,4 @@
 import { HttpAdapterConfigInterface } from "../../http";
 
 export interface WebsocketAdapterConfigInterface
-  extends Omit<HttpAdapterConfigInterface, "protocol"> {
-  /**
-   * protocol
-   *
-   * @default ws
-   * @type {string}
-   */
-  protocol?: "ws" | "wss";
-}
+  extends HttpAdapterConfigInterface {}
