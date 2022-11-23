@@ -1,90 +1,193 @@
-export * from './Core/Errors';
-export * from './types';
-export * from './Adapters/types';
-export * from './Adapters/jsonrpc/index';
+// noinspection JSUnusedGlobalSymbols
+
 import {
-    ErrorResponse,
-    ICaller,
-    INotification,
-    IRPCClientConfig,
-    TParams,
-    TResponseInput,
-    TResponseOutput,
-} from './types';
-import Axios, {AxiosError, AxiosInstance} from 'axios';
-import {TConvertTypes} from './Adapters/types';
-import {JSONRPC} from './Adapters/jsonrpc';
-import {RpcError, RpcErrorCode, RpcErrorMessage} from './Core/Errors';
+  AdapterAbstract,
+  TypeId,
+  TypeJRPCNotificationBody,
+  TypeJRPCRequestBody,
+  TypeJRPCRequestInterface,
+  TypeJRPCResponse,
+  TypeMethodParam,
+} from "./core";
 
-const configDefault = {
-    pathname: '/',
-};
+export * from "./adapters";
+export * from "./core";
 
-export default class RPCClient {
-    request: AxiosInstance;
+const debug = require("debug")("jrpc:client");
 
-    constructor(public config: IRPCClientConfig, public readonly adapter = new JSONRPC) {
-        this.config = {
-            ...configDefault,
-            ...config,
-        };
-        const axiosConfig = {
-            ...this.config.axios,
-            baseURL: this.config.url,
-            auth: this.config.auth,
-            proxy: this.config.proxy,
-            headers: this.config.headers,
-            paramsType: 'array',
-        };
-        this.request = Axios.create(axiosConfig);
-    }
+/**
+ * JSONRPC 2.0 NodeJS Client written in TypeScript
+ *
+ * @author Mahsum UREBE <info@mahsumurebe.com>
+ * @licence MIT
+ *
+ * @example
+ * const clientInstance = new JRPCClient(new HttpAdapter({ port: 3000 }));
+ * await clientInstance.start();
+ */
+export class JRPCClient {
+  constructor(protected readonly adapter: AdapterAbstract<TypeMethodParam>) {}
 
-    notification<P = any>(methods: Array<INotification<P>>): Promise<void>;
-    notification<P = any>(method: INotification<P>): Promise<void>;
-    notification<P = any>(methodName: string, params?: TParams<P>): Promise<void>;
-    notification<P = any>(method: TConvertTypes, params?: TParams<P>): Promise<void> {
-        const data = this.adapter.convert(true, this.config.paramsType, method, params);
-        this.request.post(this.config.pathname, data).catch(() => null);
-        return;
-    }
+  /**
+   * Call Batch Request
+   *
+   * With this function, you can batch call methods in the JSONRPC client.
+   *
+   * @example
+   *   const batchResponse = await clientInstance.call([
+   *     { id: 1, jsonrpc: "2.0", method: "foo", params: ["bar", "baz"] },
+   *     { id: 2, jsonrpc: "2.0", method: "bar", params: ["bar", "baz"] },
+   *     { jsonrpc: "2.0", method: "notification", params: ["bar", "baz"] }, // Notification request does not return value
+   *   ]);
+   *   console.log(batchResponse);
+   *   // [
+   *   //   { id: 1, jsonrpc: "2.0", response: "foo response" },
+   *   //   { id: 2, jsonrpc: "2.0", response: "bar response" },
+   *   // ]
+   * @param {object[]} body bulk request body object
+   *
+   * @return {Promise} Returns responses in jsonrpc response object array.
+   */
+  call<
+    TData = any,
+    TParam extends TypeMethodParam = Array<any>,
+    TId extends TypeId = number
+  >(
+    body: TypeJRPCRequestInterface<TParam, TId>[]
+  ): Promise<TypeJRPCResponse<TData, TId>[]>;
+  /**
+   * Call Request
+   *
+   * With this function you can call the method on the JSONRPC client.
+   *
+   * @example
+   *   const response = await clientInstance.call({
+   *     id: 1,
+   *     jsonrpc: "2.0",
+   *     method: "foo",
+   *     params: ["bar", "baz"],
+   *   });
+   *   console.log(response);
+   *   // { id: 1, jsonrpc: "2.0", response: "foo response" }
+   * @param {object} body request body object
+   *
+   * @return {Promise} Returns responses in jsonrpc response object.
+   */
+  call<
+    TData = any,
+    TParam extends TypeMethodParam = Array<any>,
+    TId extends TypeId = number
+  >(
+    body: TypeJRPCRequestInterface<TParam, TId>
+  ): Promise<TypeJRPCResponse<TData, TId>>;
+  /**
+   * Call Request
+   *
+   * With this function you can call the method(s) on the JSONRPC client.
+   *
+   * @example
+   *  // single call
+   *   const response = await clientInstance.call({
+   *     id: 1,
+   *     jsonrpc: "2.0",
+   *     method: "foo",
+   *     params: ["bar", "baz"],
+   *   });
+   *   console.log(response);
+   *   // { id: 1, jsonrpc: "2.0", response: "foo response" }
+   *
+   * @example
+   *  // batch call
+   *   const batchResponse = await clientInstance.call([
+   *     { id: 1, jsonrpc: "2.0", method: "foo", params: ["bar", "baz"] },
+   *     { id: 2, jsonrpc: "2.0", method: "bar", params: ["bar", "baz"] },
+   *     { jsonrpc: "2.0", method: "notification", params: ["bar", "baz"] }, // Notification request does not return value
+   *   ]);
+   *   console.log(batchResponse);
+   *   // [
+   *   //   { id: 1, jsonrpc: "2.0", response: "foo response" },
+   *   //   { id: 2, jsonrpc: "2.0", response: "bar response" },
+   *   // ]
+   * @param {object|object[]} body request body object or request body object array
+   *
+   * @return {Promise} Returns responses in jsonrpc response object.
+   */
+  call<
+    TData = any,
+    TParam extends TypeMethodParam = Array<any>,
+    TId extends TypeId = number
+  >(
+    body: TypeJRPCRequestBody<TParam, TId>
+  ): Promise<TypeJRPCResponse<TData, TId> | TypeJRPCResponse<TData, TId>[]> {
+    debug("send", body);
+    return this.adapter.request<TData, TId>(body) as Promise<
+      TypeJRPCResponse<TData, TId> | TypeJRPCResponse<TData, TId>[]
+    >;
+  }
 
-    call<T, P = any>(methods: Array<ICaller<P>>): Promise<Array<TResponseOutput<T>>>;
-    call<T, P = any>(method: ICaller<P>): Promise<TResponseOutput<T>>;
-    call<T, P = any>(methodName: string, params?: TParams<P>): Promise<TResponseOutput<T>>;
-    call<T, P = any>(method: TConvertTypes, params?: TParams<P>): Promise<Array<TResponseOutput<T>> | TResponseOutput<T>> {
-        const data = this.adapter.convert(false, this.config.paramsType, method, params);
-        return this.request
-            .post<TResponseInput<T>>(this.config.pathname, data)
-            .then(response => this.adapter.checkError<T>(response.data))
-            .catch((e: AxiosError) => {
-                if (e.isAxiosError) {
-                    if (e.response && e.response.data) {
-                        const data: ErrorResponse = e.response.data;
-                        if (typeof data === 'object') {
-                            if (data instanceof Array) {
-                                return this.adapter.checkError<T>(data);
-                            } else if (!!data.error) {
-                                throw RpcError.fromJSON({
-                                    code: data.error.code,
-                                    message: data.error.message,
-                                    data,
-                                });
-                            }
-                        }
-                    } else {
-                        throw RpcError.fromJSON({
-                            code: RpcErrorCode.INTERNAL_ERROR,
-                            message: RpcErrorMessage.INTERNAL_ERROR,
-                            parent: e
-                        })
-                    }
+  /**
+   * Notification Request
+   *
+   * With this function you can declare method(s) in the JSONRPC client.
+   *
+   * Notification requests do not wait a response from the server.
+   *
+   * @example
+   *  // single call
+   *   await clientInstance.call({
+   *     jsonrpc: "2.0",
+   *     method: "foo",
+   *     params: ["bar", "baz"],
+   *   });
+   *
+   * @example
+   *  // batch call
+   *   await clientInstance.call([
+   *     { jsonrpc: "2.0", method: "foo", params: ["bar", "baz"] },
+   *     { jsonrpc: "2.0", method: "bar", params: ["bar", "baz"] },
+   *     { jsonrpc: "2.0", method: "notification", params: ["bar", "baz"] }, // Notification request does not return value
+   *   ]);
+   *
+   * @param {object} body request body object or request body object array
+   *
+   * @return {Promise} Returns a void Promise
+   */
+  notification<TParam extends TypeMethodParam = Array<any>>(
+    body: TypeJRPCNotificationBody<TParam>
+  ): Promise<void> {
+    debug("notification", body);
+    return this.adapter.request<any, undefined>(body) as Promise<void>;
+  }
 
-                }
-                throw RpcError.fromJSON({
-                    code: RpcErrorCode.SERVER_ERROR,
-                    message: RpcErrorMessage.SERVER_ERROR,
-                    parent: e,
-                });
-            });
-    }
+  /**
+   * Start JRPCClient
+   *
+   * Connection with the server is established.
+   *
+   * @example
+   * await clientInstance.start();
+   * console.log("client connected");
+   *
+   * @return {Promise} Returns a void Promise
+   */
+  start() {
+    debug("start");
+    return this.adapter.connect();
+  }
+
+  /**
+   * Disconnects from the server.
+   *
+   * Terminate all connections, remove listeners etc.
+   *
+   * @example
+   * await clientInstance.destroy();
+   * console.log("connection close");
+   *
+   * @return {Promise} Returns a void Promise
+   */
+  destroy() {
+    debug("destroy");
+    return this.adapter.destroy();
+  }
 }
